@@ -1,7 +1,7 @@
 class CreatePopularities < ActiveRecord::Migration
   def change
     create_table :popularities do |t|
-      t.integer :entrances
+      t.integer :entrances , default: 0
       t.references :user, index: true
       t.references :product, index: true
 

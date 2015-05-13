@@ -17,7 +17,7 @@ ActiveRecord::Schema.define(version: 20150513112152) do
   enable_extension "plpgsql"
 
   create_table "popularities", force: :cascade do |t|
-    t.integer  "entrances"
+    t.integer  "entrances" , default: 0
     t.integer  "user_id"
     t.integer  "product_id"
     t.datetime "created_at", null: false
