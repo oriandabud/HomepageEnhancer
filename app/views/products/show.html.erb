@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Page link:</strong>
+  <%= @product.page_link %>
+</p>
+
+<p>
+  <strong>Picture link:</strong>
+  <%= @product.picture_link %>
+</p>
+
+<p>
+  <strong>Title:</strong>
+  <%= @product.title %>
+</p>
+
+<p>
+  <strong>Website:</strong>
+  <%= @product.website %>
+</p>
+
+<%= link_to 'Edit', edit_product_path(@product) %> |
+<%= link_to 'Back', products_path %>

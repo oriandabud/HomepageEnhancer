@@ -1,0 +1,37 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Websites</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Url</th>
+      <th>Name</th>
+      <th>Num of products</th>
+      <th>Product name selector</th>
+      <th>Product url selector</th>
+      <th>Product picture selector</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @websites.each do |website| %>
+      <tr>
+        <td><%= website.url %></td>
+        <td><%= website.name %></td>
+        <td><%= website.num_of_products %></td>
+        <td><%= website.product_name_selector %></td>
+        <td><%= website.product_url_selector %></td>
+        <td><%= website.product_picture_selector %></td>
+        <td><%= link_to 'Show', website %></td>
+        <td><%= link_to 'Edit', edit_website_path(website) %></td>
+        <td><%= link_to 'Destroy', website, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Website', new_website_path %>

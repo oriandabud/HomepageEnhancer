@@ -1,0 +1,31 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Popularities</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Entrances</th>
+      <th>User</th>
+      <th>Product</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @popularities.each do |popularity| %>
+      <tr>
+        <td><%= popularity.entrances %></td>
+        <td><%= popularity.user %></td>
+        <td><%= popularity.product %></td>
+        <td><%= link_to 'Show', popularity %></td>
+        <td><%= link_to 'Edit', edit_popularity_path(popularity) %></td>
+        <td><%= link_to 'Destroy', popularity, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Popularity', new_popularity_path %>

@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>entrances:</strong>
+  <%= @popularity.entrances %>
+</p>
+
+<p>
+  <strong>User:</strong>
+  <%= @popularity.user %>
+</p>
+
+<p>
+  <strong>Product:</strong>
+  <%= @popularity.product %>
+</p>
+
+<%= link_to 'Edit', edit_popularity_path(@popularity) %> |
+<%= link_to 'Back', popularities_path %>

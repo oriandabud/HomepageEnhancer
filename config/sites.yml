@@ -1,0 +1,6 @@
+home360:
+  url: http://www.home360.co.il/
+  title_css: .title a
+  link_css: .details , .title a , .dthumb .thumb
+  pics_css: .dthumb .thumb
+  num_of_products: 6

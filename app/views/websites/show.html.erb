@@ -1,0 +1,34 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Url:</strong>
+  <%= @website.url %>
+</p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @website.name %>
+</p>
+
+<p>
+  <strong>Num of products:</strong>
+  <%= @website.num_of_products %>
+</p>
+
+<p>
+  <strong>Product name selector:</strong>
+  <%= @website.product_name_selector %>
+</p>
+
+<p>
+  <strong>Product url selector:</strong>
+  <%= @website.product_url_selector %>
+</p>
+
+<p>
+  <strong>Product picture selector:</strong>
+  <%= @website.product_picture_selector %>
+</p>
+
+<%= link_to 'Edit', edit_website_path(@website) %> |
+<%= link_to 'Back', websites_path %>
