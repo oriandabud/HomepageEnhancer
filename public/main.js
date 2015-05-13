@@ -1,22 +1,22 @@
 var jQuery;
 
 if (window.jQuery === undefined) {
- var script_tag = document.createElement('script');
- script_tag.setAttribute("type","text/javascript");
- script_tag.setAttribute("src","https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js");
- if (script_tag.readyState) {
-   script_tag.onreadystatechange = function () { // For old versions of IE
-       if (this.readyState == 'complete' || this.readyState == 'loaded') {
-           scriptLoadHandler();
-       }
-   };
- } else { // Other browsers
-   script_tag.onload = scriptLoadHandler;
- }
- (document.getElementsByTagName("head")[0] || document.documentElement).appendChild(script_tag);    
-} else {    
- jQuery = window.jQuery;
- //main(); //our main JS functionality
+    var script_tag = document.createElement('script');
+    script_tag.setAttribute("type","text/javascript");
+    script_tag.setAttribute("src","https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js");
+    if (script_tag.readyState) {
+        script_tag.onreadystatechange = function () { // For old versions of IE
+            if (this.readyState == 'complete' || this.readyState == 'loaded') {
+                scriptLoadHandler();
+            }
+        };
+    } else { // Other browsers
+        script_tag.onload = scriptLoadHandler;
+    }
+    (document.getElementsByTagName("head")[0] || document.documentElement).appendChild(script_tag);
+} else {
+    jQuery = window.jQuery;
+    //main(); //our main JS functionality
 }
 
 // window.FO_DOMAIN = ".ushopcomp.com";
@@ -25,180 +25,167 @@ if (window.jQuery === undefined) {
 // document.body.appendChild(e);
 
 function scriptLoadHandler() {
- jQuery = window.jQuery.noConflict(true);
+    jQuery = window.jQuery.noConflict(true);
 
- main(); //our main JS functionality
+    main(); //our main JS functionality
 }
 
-function main() {     
-   jQuery(document).ready(function($) {
-   	(function() {
+function main() {
+    jQuery(document).ready(function($) {
+        (function() {
 
-        /*
-         Orbitz.js
-         Class for data scraping of Orbitz
-         @trafficSources: Array of authorized traffic sources
-         @host: the current traffic source
-         */
+            /*
+             ts-service.js
+             Service for identifing if the current website is a traffic source
+             @trafficSources: Array of authorized traffic sources
+             @host: the current traffic source
+             */
+            params = {
+                trafficSources : ["home360.co.il","toyz.co.il"],
+                api_url: 'http://localhost:3000',
+                host: window.location.host,
+                isTrafficSource: function () {
+                    return (new RegExp('\\b' + params.trafficSources.join('\\b|\\b') + '\\b', "i")
+                        .test(params.host))
+                }
+            },
 
-        function PageView() {
-        }
+            /*
+             PageView.js
+             Class for data PageView
+             Report server about user entrance specific product
+             */
+
+            function PageView() {
+                this.url = window.location.href,
+                this.user = localStorage.getItem("user-uuid")
+            }
 
             PageView.prototype = {
-            constructor: PageView,
+                constructor:  PageView,
+                ReportToServer: function () {
+                    $.post(params.api_url+'/page_view/',
+                            {
+                                user: self.user,
+                                url: self.url,
+                                website: params.host
+                            })
+                        .done(function(data){
+                            console.log('reported user:' + this.user + ' on page ' + this.url)
+                        })
+                }
+            };
 
-            getRating: function(){
-                // For single hotel page
-            },
+            /*
+             User.js
+             Integrate with authentication on api
+             distinguish between users
+             send report to server about user
+             */
 
-            getHotelName: function(){
+            function User() {
+                self.uuid = User.guid()
+            }
 
-            },
+                User.guid = function (){
+                    function s4() {
+                        return Math.floor((1 + Math.random()) * 0x10000)
+                            .toString(16)
+                            .substring(1);
+                    }
+                    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                        s4() + '-' + s4() + s4() + s4();
+                },
 
-            getDestination: function() {
+                    User.prototype = {
+                    constructor: User,
 
-            },
+                    saveToStorage: function () {
+                        localStorage.setItem('user-uuid', self.uuid);
+                    },
+                    createOnServer: function () {
+                        $.get(params.api_url+'/authenticate/'+self.uuid+'' + '.json?website='+params.url,
+                                    function(user){
+                                        console.log('authenticated ' + user.uuid)
+                                    }
+                        );
+                    },
+                    exist: function(){
+                      return localStorage.getItem('user-uuid') != null
+                    },
+                    createAndSave: function(){
+                        self.saveToStorage();
+                        self.createOnServer();
+                    }
+                };
 
-            getDates: function () {
-                var dates = {};
-                dates.checkin = jQuery("input[name='hotel.chkin']").val();
-                dates.checkout = jQuery("input[name='hotel.chkout']").val();
-                return dates;
-            },
+            /*
+             Recommandation.js
+             Class for data Recommandation
+             gets data about manipulating the dom
+             manipulate the dom
+             */
 
-            getPrice: function () {
-                var price = {};
-                price.currency = this.getCurrency();
+            function Recommandation() {
+                this.url = window.location.host,
+                this.products = {},
+                this.products_count = 0,
+                this.selectors = {}
+            }
 
-                try {
-                    var pricesArr = jQuery(".leadPrice"); // get the divs containing the price
-                    var sum = 0;
-                    var minimalPrice = 10000000; // Instead of using this giant price I could took the first price from the list
-                    $.each(pricesArr,function () {
-                        var pString = $(this).html();
-                        var price = parseInt(pString.replace(/[^0-9\.]+/g,"")); // remove non number chars from price string
+            Recommandation.prototype = {
+                constructor: Recommandation,
 
-                        sum +=  price;
-                        if (minimalPrice > price)
-                        {
-                            minimalPrice = price;
+                get: function(){
+                    $.get(params.api_url+'/recommendation/'+params.url,
+                        function(data){
+                            this.products = data.products;
+                            this.products_count = data.products_count;
+                            this.selectors = data.products;
                         }
-
-                    });
-
-                    price.minimal = minimalPrice;
-
-                    price.average = parseInt(sum / pricesArr.length);
-                } catch(e) {
-                    console.log("BestDeal error" + e.message);
-                    price.average = null;
+                    );
+                },
+                set: function(){
+                    if (this.products_count && this.products_count > 0 && this.products.length >0){
+                        this.products.each(function(product){
+                            $(this.selectors.url).attr('href',product.url);
+                            $(this.selectors.name).text(product.name);
+                            $(this.selectors.picture).attr('src',product.image);
+                        })
+                    }
+                },
+                manipulate: function(){
+                    get().done(set());
                 }
 
-                return price;
-            },
+            };
 
-            getCurrency: function () {
-                return jQuery(".leadPrice").first().text().trim().substring(0,1);
-            }
-        };
+            /*
+             Actual logic
+             */
 
-			try {
- 				if(tsSrvc.isTrafficSource(window.location.host)){
-					var data = {};
-					data.ts = window.location.host;
-					var tsClass = tsSrvc.trafficSourceClass();
-
-					data.destination = tsClass.getDestination();
-
-                    if(data.destination != undefined && data.destination != "")
-                    {
-                        data.dates = tsClass.getDates();
-                        data.price = tsClass.getPrice();
-                        data.hotelName =tsClass.getHotelName();
-                        data.stars = tsClass.getRating();
-                        var viewSrvc = new viewSrvc(null,data);
-                        var api = new API(viewSrvc);
-                        api.getOffers(data.destination);
-
-                        if(tsSrvc.isTrafficSourcesUseAjax(window.location.host)){
-
-                            // This method is working perfectly for priceLine and for Hotels
-                            jQuery( document ).ajaxComplete(function( event,request, settings ) {
-
-                                data.dates = tsClass.getDates();
-                                data.price = tsClass.getPrice();
-                                data.hotelName =tsClass.getHotelName();
-                                api.getOffers(data.destination);
-                            });
-                        }
-                        else if (window.location.host == "www.orbitz.com")
-                        {
-
-                            // This is not the best way but at least for now it's not pulling
-                            $('form').click(function(e) {
-                                setTimeout(function(){
-                                    data.dates = tsClass.getDates();
-                                    data.price = tsClass.getPrice();
-                                    data.hotelName =tsClass.getHotelName();
-                                    api.getOffers(data.destination);
-                                },4000);
-                            });
-
-                        }
-                        else if(window.location.host == "www.tripadvisor.com")
-                        {
-
-                            (function() {
-                                var classes = [Request, Request.HTML, Request.JSON],
-                                    // map to a text name
-                                    mapper = ["Request", "Request.HTML", "Request.JSON"],
-                                    // store reference to original methods
-                                    orig = {
-                                        onSuccess: Request.prototype.onSuccess
-                                    },
-                                    // changes to prototypes to implement
-                                    changes = {
-                                        onSuccess: function(){
-                                            Request.Spy && typeof Request.Spy == "function" && Request.Spy.apply(this, arguments);
-                                            orig.onSuccess.apply(this, arguments);
-                                        }
-                                    };
-
-                                classes.invoke('implement', changes);
-
-                                // allow us to tell which Class prototype has called the ajax
-                                Request.implement({
-                                    getClass: function() {
-                                        var ret;
-                                        Array.each(classes, function(klass, index) {
-                                            if (instanceOf(this, klass)) {
-                                                ret = mapper[index];
-                                            }
-                                        }, this);
-                                        return ret;
-                                    }
-                                });
-                            })();
-
-                            // to enable spying, just define Request.Spy as a function:
-                            Request.Spy = function() {
-                                data.dates = tsClass.getDates();
-                                data.price = tsClass.getPrice();
-                                data.hotelName =tsClass.getHotelName();
-                                api.getOffers(data.destination);
-                            };
-                        }
+            try {
+                if(params.isTrafficSource()){
+                    /*create user*/
+                    user = User.new();
+                    if (!user.exist){
+                        /*save user to local storage and api_server*/
+                        user.createAndSave();
                     }
 
-				}
-			} catch(e) {
-				console.log("BestDeal Error "+ e.message);
-			}
-		})();
-	});
+                    /*report on each page visited*/
+                    page_view = PageView.new();
+                    page_view.ReportToServer();
+
+                    /*manipulate dom*/
+                    recommendation = Recommandation.new();
+                    recommendation.manipulate();
+
+                }
+            } catch(e) {
+                console.log("HomeInhencer Error "+ e.message);
+            }
+        })();
+    });
 }
-
-
-
-
 
