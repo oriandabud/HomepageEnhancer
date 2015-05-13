@@ -1,0 +1,17 @@
+if @products.present?
+    json.products @products do |product|
+        json.deal do
+          json.product_name(product.name)
+          json.product_url(product.page_link)
+          json.product_picture(product.picture_link)
+        end
+    end
+end
+if @website.present?
+    json.website do
+        json.products_count(website.num_of_products)
+        json.name_selector(website.product_name_selector)
+        json.url_selector(website.product_url_selector)
+        json.picture_selector(website.product_picture_selector)
+    end
+end
