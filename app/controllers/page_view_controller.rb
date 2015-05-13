@@ -1,0 +1,2 @@
+class PageViewController < ApplicationController
+end
