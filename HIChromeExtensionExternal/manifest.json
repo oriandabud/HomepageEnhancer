@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
 
-  "name": "bestdeal-dev-with-external",
+  "name": "home-inhencer-dev-with-external",
   "version": "1.0",
-  "description": "Suggest a better hotel deal",
+  "description": "each user each homepage",
 
   "browser_action": {
     "default_icon": "icon.png"

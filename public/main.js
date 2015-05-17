@@ -1,6 +1,7 @@
 var jQuery;
 
 if (window.jQuery === undefined) {
+    console.log('HI ==1==');
     var script_tag = document.createElement('script');
     script_tag.setAttribute("type","text/javascript");
     script_tag.setAttribute("src","https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js");
@@ -16,7 +17,8 @@ if (window.jQuery === undefined) {
     (document.getElementsByTagName("head")[0] || document.documentElement).appendChild(script_tag);
 } else {
     jQuery = window.jQuery;
-    //main(); //our main JS functionality
+    console.log('HI ==2==');
+    main(); //our main JS functionality
 }
 
 // window.FO_DOMAIN = ".ushopcomp.com";
@@ -26,13 +28,15 @@ if (window.jQuery === undefined) {
 
 function scriptLoadHandler() {
     jQuery = window.jQuery.noConflict(true);
-
+    console.log('HI ==3==');
     main(); //our main JS functionality
 }
 
 function main() {
+    console.log('HI ==4==');
     jQuery(document).ready(function($) {
         (function() {
+            console.log('HI ==5==');
 
             /*
              ts-service.js
@@ -41,14 +45,14 @@ function main() {
              @host: the current traffic source
              */
             params = {
-                trafficSources : ["home360.co.il","toyz.co.il"],
+                trafficSources : ["www.home360.co.il","www.toyz.co.il"],
                 api_url: 'http://localhost:3000',
                 host: window.location.host,
                 isTrafficSource: function () {
                     return (new RegExp('\\b' + params.trafficSources.join('\\b|\\b') + '\\b', "i")
                         .test(params.host))
                 }
-            },
+            };
 
             /*
              PageView.js
@@ -61,18 +65,23 @@ function main() {
                 this.user = localStorage.getItem("user-uuid")
             }
 
-            PageView.prototype = {
+                PageView.prototype = {
                 constructor:  PageView,
+                page_view: this,
+
                 ReportToServer: function () {
-                    $.post(params.api_url+'/page_view/',
-                            {
-                                user: self.user,
-                                url: self.url,
+                    $.ajax({
+                        type: "POST",
+                        url: params.api_url+'/page_view/',
+                        data: {
+                                user: page_view.user,
+                                url: page_view.url,
                                 website: params.host
-                            })
-                        .done(function(data){
-                            console.log('reported user:' + this.user + ' on page ' + this.url)
-                        })
+                              },
+                        success: function(data) {
+                            console.log('reported user:' + page_view.user + ' on page ' + page_view.url)
+                        }
+                    });
                 }
             };
 
@@ -95,18 +104,19 @@ function main() {
                     }
                     return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
                         s4() + '-' + s4() + s4() + s4();
-                },
+                };
 
-                    User.prototype = {
+                User.prototype = {
                     constructor: User,
+                    user : this,
 
                     saveToStorage: function () {
-                        localStorage.setItem('user-uuid', self.uuid);
+                        localStorage.setItem('user-uuid', user.uuid);
                     },
                     createOnServer: function () {
-                        $.get(params.api_url+'/authenticate/'+self.uuid+'' + '.json?website='+params.url,
-                                    function(user){
-                                        console.log('authenticated ' + user.uuid)
+                        $.get(params.api_url+'/authenticate/'+user.uuid+'' + '.json?website='+params.url,
+                                    function(userSR){
+                                        console.log('authenticated ' + userSR.uuid)
                                     }
                         );
                     },
@@ -114,8 +124,8 @@ function main() {
                       return localStorage.getItem('user-uuid') != null
                     },
                     createAndSave: function(){
-                        self.saveToStorage();
-                        self.createOnServer();
+                        user.saveToStorage();
+                        user.createOnServer();
                     }
                 };
 
@@ -133,29 +143,30 @@ function main() {
                 this.selectors = {}
             }
 
-            Recommandation.prototype = {
+                Recommandation.prototype = {
                 constructor: Recommandation,
+                recommendation: this,
 
                 get: function(){
                     $.get(params.api_url+'/recommendation/'+params.url,
                         function(data){
-                            this.products = data.products;
-                            this.products_count = data.products_count;
-                            this.selectors = data.products;
+                            recommendation.products = data.products;
+                            recommendation.products_count = data.products_count;
+                            recommendation.selectors = data.products;
                         }
                     );
                 },
                 set: function(){
                     if (this.products_count && this.products_count > 0 && this.products.length >0){
                         this.products.each(function(product){
-                            $(this.selectors.url).attr('href',product.url);
-                            $(this.selectors.name).text(product.name);
-                            $(this.selectors.picture).attr('src',product.image);
+                            $(recommendation.selectors.url).attr('href',product.url);
+                            $(recommendation.selectors.name).text(product.name);
+                            $(recommendation.selectors.picture).attr('src',product.image);
                         })
                     }
                 },
                 manipulate: function(){
-                    get().done(set());
+                    recommendation.get().done(set());
                 }
 
             };
@@ -163,22 +174,27 @@ function main() {
             /*
              Actual logic
              */
-
+            console.log('HI ==5==');
             try {
+                console.log('starting HI');
                 if(params.isTrafficSource()){
+                    console.log('HI inside first if');
                     /*create user*/
-                    user = User.new();
+                    user = new User;
                     if (!user.exist){
+                        console.log('creating user HI');
                         /*save user to local storage and api_server*/
                         user.createAndSave();
                     }
 
                     /*report on each page visited*/
-                    page_view = PageView.new();
+                    console.log('visiting page HI');
+                    page_view = new PageView;
                     page_view.ReportToServer();
 
                     /*manipulate dom*/
-                    recommendation = Recommandation.new();
+                    console.log('manipulate dom HI');
+                    recommendation = new Recommandation;
                     recommendation.manipulate();
 
                 }
