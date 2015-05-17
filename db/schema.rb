@@ -11,13 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150513112152) do
+ActiveRecord::Schema.define(version: 20150517145521) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "popularities", force: :cascade do |t|
-    t.integer  "entrances" , default: 0
+    t.integer  "entrances"
     t.integer  "user_id"
     t.integer  "product_id"
     t.datetime "created_at", null: false
@@ -54,8 +54,10 @@ ActiveRecord::Schema.define(version: 20150513112152) do
     t.string   "product_name_selector"
     t.string   "product_url_selector"
     t.string   "product_picture_selector"
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+    t.string   "page_product_picture_selector"
+    t.string   "page_product_name_selector"
   end
 
   add_foreign_key "popularities", "products"

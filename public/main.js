@@ -70,6 +70,7 @@ function main() {
                 page_view: this,
 
                 ReportToServer: function () {
+
                     $.ajax({
                         type: "POST",
                         url: params.api_url+'/page_view/',
@@ -148,7 +149,7 @@ function main() {
                 recommendation: this,
 
                 get: function(){
-                    $.get(params.api_url+'/recommendation/'+params.url,
+                    $.get(params.api_url+'/recommendation/'+params.host,
                         function(data){
                             recommendation.products = data.products;
                             recommendation.products_count = data.products_count;
@@ -157,8 +158,8 @@ function main() {
                     );
                 },
                 set: function(){
-                    if (this.products_count && this.products_count > 0 && this.products.length >0){
-                        this.products.each(function(product){
+                    if(recommendation.products_count && recommendation.products_count > 0 && recommendation.products.length >0){
+                        recommendation.products.each(function(product){
                             $(recommendation.selectors.url).attr('href',product.url);
                             $(recommendation.selectors.name).text(product.name);
                             $(recommendation.selectors.picture).attr('src',product.image);
@@ -166,7 +167,24 @@ function main() {
                     }
                 },
                 manipulate: function(){
-                    recommendation.get().done(set());
+                    $.ajax({
+                        type: "GET",
+                        url: params.api_url+'/recommendation/'+params.url,
+                        data: {},
+                        success: function(data) {
+                            recommendation.products = data.products;
+                            recommendation.products_count = data.products_count;
+                            recommendation.selectors = data.products;
+                            if(recommendation.products_count && recommendation.products_count > 0 && recommendation.products.length >0){
+                                recommendation.products.each(function(product){
+                                    $(recommendation.selectors.url).attr('href',product.url);
+                                    $(recommendation.selectors.name).text(product.name);
+                                    $(recommendation.selectors.picture).attr('src',product.image);
+                                })
+                            }
+                        }
+                    }
+                    )
                 }
 
             };
