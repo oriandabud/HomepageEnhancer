@@ -17,11 +17,11 @@ ActiveRecord::Schema.define(version: 20150517145521) do
   enable_extension "plpgsql"
 
   create_table "popularities", force: :cascade do |t|
-    t.integer  "entrances"
+    t.integer  "entrances",  default: 0
     t.integer  "user_id"
     t.integer  "product_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
   end
 
   add_index "popularities", ["product_id"], name: "index_popularities_on_product_id", using: :btree
@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(version: 20150517145521) do
     t.integer  "website_id"
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
+    t.integer  "price"
   end
 
   add_index "products", ["website_id"], name: "index_products_on_website_id", using: :btree
@@ -58,6 +59,8 @@ ActiveRecord::Schema.define(version: 20150517145521) do
     t.datetime "updated_at",                    null: false
     t.string   "page_product_picture_selector"
     t.string   "page_product_name_selector"
+    t.string   "page_product_price_selector"
+    t.string   "product_price_selector"
   end
 
   add_foreign_key "popularities", "products"

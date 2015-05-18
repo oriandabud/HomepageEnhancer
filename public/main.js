@@ -48,6 +48,7 @@ function main() {
                 trafficSources : ["www.home360.co.il","www.toyz.co.il"],
                 api_url: 'http://localhost:3000',
                 host: window.location.host,
+                host_name: window.location.host.split('.')[1],
                 isTrafficSource: function () {
                     return (new RegExp('\\b' + params.trafficSources.join('\\b|\\b') + '\\b', "i")
                         .test(params.host))
@@ -77,7 +78,7 @@ function main() {
                         data: {
                                 user: page_view.user,
                                 url: page_view.url,
-                                website: params.host
+                                website: params.host_name
                               },
                         success: function(data) {
                             console.log('reported user:' + page_view.user + ' on page ' + page_view.url)
@@ -149,11 +150,11 @@ function main() {
                 recommendation: this,
 
                 get: function(){
-                    $.get(params.api_url+'/recommendation/'+params.host,
+                    $.get(params.api_url+'/recommendation/'+params.host_name,
                         function(data){
                             recommendation.products = data.products;
                             recommendation.products_count = data.products_count;
-                            recommendation.selectors = data.products;
+                            recommendation.selectors = data.selectors;
                         }
                     );
                 },
@@ -167,24 +168,37 @@ function main() {
                     }
                 },
                 manipulate: function(){
-                    $.ajax({
-                        type: "GET",
-                        url: params.api_url+'/recommendation/'+params.url,
-                        data: {},
-                        success: function(data) {
-                            recommendation.products = data.products;
-                            recommendation.products_count = data.products_count;
-                            recommendation.selectors = data.products;
-                            if(recommendation.products_count && recommendation.products_count > 0 && recommendation.products.length >0){
-                                recommendation.products.each(function(product){
-                                    $(recommendation.selectors.url).attr('href',product.url);
-                                    $(recommendation.selectors.name).text(product.name);
-                                    $(recommendation.selectors.picture).attr('src',product.image);
-                                })
+                    setTimeout(function(){
+                        console.log('hello world');
+                        $.ajax({
+                            type: "GET",
+                            url: params.api_url+'/recommendation/'+params.host_name,
+                            data: {
+                                uuid: localStorage.getItem("user-uuid"),
+                                url: window.location.host
+                            },
+                            success: function(data) {
+                                data = jQuery.parseJSON(data);
+                                console.log('products:'+data.products +'\n' + 'products_count:'+data.products_count +'\n'+ 'selectors:'+data.selectors);
+                                recommendation.products = data.products;
+                                recommendation.products_count = data.products_count;
+                                recommendation.selectors = data.selectors;
+                                if(location.href.split('/')[location.href.split('/').length-1] == '' && recommendation.products_count && recommendation.products_count > 0 && recommendation.products.length >0){
+                                    urls = $(recommendation.selectors.url);
+                                    num_of_urls = parseInt(urls.length/recommendation.products_count);
+                                    $(recommendation.products).each(function(index,product){
+                                        product = product.product;
+                                        var start = (index*num_of_urls);
+                                        var end = ((index*num_of_urls)+num_of_urls);
+                                        $($(recommendation.selectors.url).slice(start,end)).attr('href',product.url);
+                                        $($(recommendation.selectors.name)[index]).text(product.name);
+                                        $($(recommendation.selectors.picture)[index]).attr('src',product.picture);
+                                        $($(recommendation.selectors.price)[index]).text($($(recommendation.selectors.price)[index]).text().replace(/[0-9/.]+/g, product.price));
+                                    })
+                                }
                             }
-                        }
-                    }
-                    )
+                        })
+                    }, 5000);
                 }
 
             };
