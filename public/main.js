@@ -46,7 +46,7 @@ function main() {
              */
             params = {
                 trafficSources : ["www.home360.co.il","www.toyz.co.il"],
-                api_url: 'http://localhost:3000',
+                api_url: 'http://homepage-enhancer.herokuapp.com',
                 host: window.location.host,
                 host_name: window.location.host.split('.')[1],
                 isTrafficSource: function () {

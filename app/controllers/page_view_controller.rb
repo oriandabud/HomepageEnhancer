@@ -1,6 +1,5 @@
 class PageViewController < ApplicationController
   require 'open-uri'
-
   skip_before_filter :verify_authenticity_token
   before_action :set_product , only: [:create ]
   before_action :set_user , only: [:create ]

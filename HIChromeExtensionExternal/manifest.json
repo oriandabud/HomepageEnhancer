@@ -19,7 +19,7 @@
   
   "permissions": [
   "tabs",
-  "https://blooming-cliffs-1855.herokuapp.com/*",
+  "https://homepage-enhancer.herokuapp.com/*",
   "https://localhost:3000/*"
   ]
 }
