@@ -1,7 +1,6 @@
 var jQuery;
 
 if (window.jQuery === undefined) {
-    console.log('HI ==1==');
     var script_tag = document.createElement('script');
     script_tag.setAttribute("type","text/javascript");
     script_tag.setAttribute("src","https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js");
@@ -17,7 +16,6 @@ if (window.jQuery === undefined) {
     (document.getElementsByTagName("head")[0] || document.documentElement).appendChild(script_tag);
 } else {
     jQuery = window.jQuery;
-    console.log('HI ==2==');
     main(); //our main JS functionality
 }
 
@@ -28,16 +26,12 @@ if (window.jQuery === undefined) {
 
 function scriptLoadHandler() {
     jQuery = window.jQuery.noConflict(true);
-    console.log('HI ==3==');
     main(); //our main JS functionality
 }
 
 function main() {
-    console.log('HI ==4==');
     jQuery(document).ready(function($) {
         (function() {
-            console.log('HI ==5==');
-
             /*
              ts-service.js
              Service for identifing if the current website is a traffic source
@@ -46,7 +40,7 @@ function main() {
              */
             params = {
                 trafficSources : ["www.home360.co.il","www.toyz.co.il"],
-                api_url: 'http://homepage-enhancer.herokuapp.com',
+                api_url: 'http://localhost:3000',
                 host: window.location.host,
                 host_name: window.location.host.split('.')[1],
                 isTrafficSource: function () {
@@ -149,51 +143,38 @@ function main() {
                 constructor: Recommandation,
                 recommendation: this,
 
-                get: function(){
-                    $.get(params.api_url+'/recommendation/'+params.host_name,
-                        function(data){
-                            recommendation.products = data.products;
-                            recommendation.products_count = data.products_count;
-                            recommendation.selectors = data.selectors;
-                        }
-                    );
-                },
-                set: function(){
-                    if(recommendation.products_count && recommendation.products_count > 0 && recommendation.products.length >0){
-                        recommendation.products.each(function(product){
-                            $(recommendation.selectors.url).attr('href',product.url);
-                            $(recommendation.selectors.name).text(product.name);
-                            $(recommendation.selectors.picture).attr('src',product.image);
-                        })
-                    }
-                },
-                manipulate: function(){
-                    console.log('hello world');
+                get: function(callback){
                     $.ajax({
                         type: "GET",
-                        url: params.api_url+'/recommendation/'+params.host_name,
+                        url: params.api_url + '/recommendation/' + params.host_name,
                         data: {
-                            uuid: localStorage.getItem('user-uuid'+params.api_url),
+                            uuid: localStorage.getItem('user-uuid' + params.api_url),
                             url: window.location.host
                         },
-                        success: function(data) {
+                        success: function(data){
                             data = jQuery.parseJSON(data);
                             console.log('products:'+data.products +'\n' + 'products_count:'+data.products_count +'\n'+ 'selectors:'+data.selectors);
                             recommendation.products = data.products;
                             recommendation.products_count = data.products_count;
                             recommendation.selectors = data.selectors;
-                            if(location.href.split('/')[location.href.split('/').length-1] == '' && recommendation.products_count !== undefined &&
-                                recommendation.products_count > 0 && recommendation.products.length >0){
-                                $(recommendation.products).each(function(index,product){
-                                    product = product.product;
-                                    $(products_index(recommendation.selectors.url,recommendation.products_count,index)).attr('href',product.url);
-                                    $(products_index(recommendation.selectors.name,recommendation.products_count,index)).text(product.name);
-                                    $(products_index(recommendation.selectors.picture,recommendation.products_count,index)).attr('src',product.picture);
-                                    $(products_index(recommendation.selectors.price,recommendation.products_count,index)).text($($(recommendation.selectors.price)[index]).text().replace(/[0-9/.]+/g, product.price));
-                                })
-                            }
+                            callback();
                         }
                     })
+                },
+                set: function(){
+                    if(location.href.split('/')[location.href.split('/').length-1] == '' && recommendation.products_count !== undefined &&
+                        recommendation.products_count > 0 && recommendation.products.length >0){
+                        $(recommendation.products).each(function(index,product){
+                            product = product.product;
+                            $(products_index(recommendation.selectors.url,recommendation.products_count,index)).attr('href',product.url);
+                            $(products_index(recommendation.selectors.name,recommendation.products_count,index)).text(product.name);
+                            $(products_index(recommendation.selectors.picture,recommendation.products_count,index)).attr('src',product.picture);
+                            $(products_index(recommendation.selectors.price,recommendation.products_count,index)).text($($(recommendation.selectors.price)[index]).text().replace(/[0-9/.]+/g, product.price));
+                        })
+                    }
+                },
+                manipulate: function(){
+                    recommendation.get(recommendation.set);
                 }
             };
             function products_index(selector,products_count,index){
@@ -205,16 +186,13 @@ function main() {
             /*
              Actual logic
              */
-            console.log('HI ==5==');
             try {
-                console.log('starting HI');
                 if(params.isTrafficSource()){
                     /*manipulate dom*/
                     console.log('manipulate dom HI');
                     recommendation = new Recommandation;
                     recommendation.manipulate();
 
-                    console.log('HI inside first if');
                     /*create user*/
                     user = new User;
                     if (!user.exist()){

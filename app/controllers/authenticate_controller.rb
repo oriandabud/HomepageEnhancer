@@ -1,4 +1,5 @@
 class AuthenticateController < ApplicationController
+  before_action :set_website, only: [:show]
   before_action :set_user, only: [:show]
 
   def show
@@ -8,9 +9,11 @@ class AuthenticateController < ApplicationController
   private
   # Use callbacks to share common setup or constraints between actions.
   def set_user
+    @user = User.find_by_uuid(user_params[:uuid]) || User.create_with_website(user_params , @website)
+  end
+
+  def set_website
     @website = website.find_by_url(user_params[:website])
-    user_params[:website_id] = @website.id
-    @user = User.find_by_uuid(user_params[:uuid]) || User.create(user_params)
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
