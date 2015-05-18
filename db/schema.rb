@@ -16,6 +16,15 @@ ActiveRecord::Schema.define(version: 20150517145521) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "categories", force: :cascade do |t|
+    t.string   "page_link"
+    t.integer  "website_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "categories", ["website_id"], name: "index_categories_on_website_id", using: :btree
+
   create_table "popularities", force: :cascade do |t|
     t.integer  "entrances",  default: 0
     t.integer  "user_id"
@@ -63,6 +72,7 @@ ActiveRecord::Schema.define(version: 20150517145521) do
     t.string   "product_price_selector"
   end
 
+  add_foreign_key "categories", "websites"
   add_foreign_key "popularities", "products"
   add_foreign_key "popularities", "users"
   add_foreign_key "products", "websites"

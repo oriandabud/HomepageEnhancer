@@ -3,5 +3,5 @@
 // dev_url = http://localhost:3000
 (function() {
 	var url = 'http://homepage-enhancer.herokuapp.com';
-	$('head').append("<script type='text/javascript' src='"+url+"/main.js'>");
+	$('head').prepend("<script type='text/javascript' src='"+url+"/main.js'>");
 })();

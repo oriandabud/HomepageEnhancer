@@ -81,6 +81,7 @@ GEM
       mini_portile (~> 0.6.0)
     pg (0.18.1)
     rack (1.6.1)
+    rack-cors (0.4.0)
     rack-test (0.6.3)
       rack (>= 1.0)
     rails (4.2.0)
@@ -155,6 +156,7 @@ DEPENDENCIES
   jsonify-rails
   nokogiri
   pg
+  rack-cors
   rails (= 4.2.0)
   responders (~> 2.0)
   sass-rails (~> 5.0)

@@ -63,7 +63,7 @@ function main() {
 
             function PageView() {
                 this.url = window.location.href,
-                this.user = localStorage.getItem("user-uuid")
+                this.user = localStorage.getItem("user-uuid"+params.api_url)
             }
 
                 PageView.prototype = {
@@ -113,7 +113,7 @@ function main() {
                     user : this,
 
                     saveToStorage: function () {
-                        localStorage.setItem('user-uuid', user.uuid);
+                        localStorage.setItem('user-uuid'+params.api_url, User.guid());
                     },
                     createOnServer: function () {
                         $.get(params.api_url+'/authenticate/'+user.uuid+'' + '.json?website='+params.url,
@@ -123,7 +123,7 @@ function main() {
                         );
                     },
                     exist: function(){
-                      return localStorage.getItem('user-uuid') != null
+                      return localStorage.getItem('user-uuid'+ params.api_url) != null
                     },
                     createAndSave: function(){
                         user.saveToStorage();
@@ -168,39 +168,38 @@ function main() {
                     }
                 },
                 manipulate: function(){
-                    setTimeout(function(){
-                        console.log('hello world');
-                        $.ajax({
-                            type: "GET",
-                            url: params.api_url+'/recommendation/'+params.host_name,
-                            data: {
-                                uuid: localStorage.getItem("user-uuid"),
-                                url: window.location.host
-                            },
-                            success: function(data) {
-                                data = jQuery.parseJSON(data);
-                                console.log('products:'+data.products +'\n' + 'products_count:'+data.products_count +'\n'+ 'selectors:'+data.selectors);
-                                recommendation.products = data.products;
-                                recommendation.products_count = data.products_count;
-                                recommendation.selectors = data.selectors;
-                                if(location.href.split('/')[location.href.split('/').length-1] == '' && recommendation.products_count && recommendation.products_count > 0 && recommendation.products.length >0){
-                                    urls = $(recommendation.selectors.url);
-                                    num_of_urls = parseInt(urls.length/recommendation.products_count);
-                                    $(recommendation.products).each(function(index,product){
-                                        product = product.product;
-                                        var start = (index*num_of_urls);
-                                        var end = ((index*num_of_urls)+num_of_urls);
-                                        $($(recommendation.selectors.url).slice(start,end)).attr('href',product.url);
-                                        $($(recommendation.selectors.name)[index]).text(product.name);
-                                        $($(recommendation.selectors.picture)[index]).attr('src',product.picture);
-                                        $($(recommendation.selectors.price)[index]).text($($(recommendation.selectors.price)[index]).text().replace(/[0-9/.]+/g, product.price));
-                                    })
-                                }
+                    console.log('hello world');
+                    $.ajax({
+                        type: "GET",
+                        url: params.api_url+'/recommendation/'+params.host_name,
+                        data: {
+                            uuid: localStorage.getItem('user-uuid'+params.api_url),
+                            url: window.location.host
+                        },
+                        success: function(data) {
+                            data = jQuery.parseJSON(data);
+                            console.log('products:'+data.products +'\n' + 'products_count:'+data.products_count +'\n'+ 'selectors:'+data.selectors);
+                            recommendation.products = data.products;
+                            recommendation.products_count = data.products_count;
+                            recommendation.selectors = data.selectors;
+                            if(location.href.split('/')[location.href.split('/').length-1] == '' && recommendation.products_count !== undefined &&
+                                recommendation.products_count > 0 && recommendation.products.length >0){
+                                $(recommendation.products).each(function(index,product){
+                                    product = product.product;
+                                    $(products_index(recommendation.selectors.url,recommendation.products_count,index)).attr('href',product.url);
+                                    $(products_index(recommendation.selectors.name,recommendation.products_count,index)).text(product.name);
+                                    $(products_index(recommendation.selectors.picture,recommendation.products_count,index)).attr('src',product.picture);
+                                    $(products_index(recommendation.selectors.price,recommendation.products_count,index)).text($($(recommendation.selectors.price)[index]).text().replace(/[0-9/.]+/g, product.price));
+                                })
                             }
-                        })
-                    }, 5000);
+                        }
+                    })
                 }
-
+            };
+            function products_index(selector,products_count,index){
+                urls = $(selector);
+                num_of_urls = parseInt(urls.length/products_count);
+                return urls.slice((index*num_of_urls),((index*num_of_urls)+num_of_urls));
             };
 
             /*
@@ -210,24 +209,23 @@ function main() {
             try {
                 console.log('starting HI');
                 if(params.isTrafficSource()){
-                    console.log('HI inside first if');
-                    /*create user*/
-                    user = new User;
-                    if (!user.exist){
-                        console.log('creating user HI');
-                        /*save user to local storage and api_server*/
-                        user.createAndSave();
-                    }
-
-                    /*report on each page visited*/
-                    console.log('visiting page HI');
-                    page_view = new PageView;
-                    page_view.ReportToServer();
-
                     /*manipulate dom*/
                     console.log('manipulate dom HI');
                     recommendation = new Recommandation;
                     recommendation.manipulate();
+
+                    console.log('HI inside first if');
+                    /*create user*/
+                    user = new User;
+                    if (!user.exist()){
+                        console.log('creating user HI');
+                        /*save user to local storage and api_server*/
+                        user.createAndSave();
+                    }
+                    /*report on each page visited*/
+                    console.log('visiting page HI');
+                    page_view = new PageView;
+                    page_view.ReportToServer();
 
                 }
             } catch(e) {

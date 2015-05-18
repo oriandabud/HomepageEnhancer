@@ -6,7 +6,7 @@ class RecommendationController < ApplicationController
   def show
     @website.num_of_products
     @products = @website.products.limit(0)
-    @user.popularities.limit(@website.num_of_products).each {|p| @products << p.product}
+    @user.popularities.limit(@website.num_of_products).each {|p| @products << p.product} if @user
     @products += @website.products.limit(@website.num_of_products - (@product.try(:length)|| 0))
     render layout: false
   end
