@@ -8,6 +8,8 @@ class AuthenticateController < ApplicationController
   private
   # Use callbacks to share common setup or constraints between actions.
   def set_user
+    @website = website.find_by_url(user_params[:website])
+    user_params[:website_id] = @website.id
     @user = User.find_by_uuid(user_params[:uuid]) || User.create(user_params)
   end
 
