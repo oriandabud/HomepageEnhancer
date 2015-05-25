@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150517145521) do
+ActiveRecord::Schema.define(version: 20150525104819) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,23 @@ ActiveRecord::Schema.define(version: 20150517145521) do
 
   add_index "categories", ["website_id"], name: "index_categories_on_website_id", using: :btree
 
+  create_table "category_pages", force: :cascade do |t|
+    t.integer  "website_id"
+    t.string   "products_selector"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
+
+  create_table "home_pages", force: :cascade do |t|
+    t.integer  "website_id"
+    t.string   "product_name_selector"
+    t.string   "product_url_selector"
+    t.string   "product_price_selector"
+    t.string   "product_picture_selector"
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
   create_table "popularities", force: :cascade do |t|
     t.integer  "entrances",  default: 0
     t.integer  "user_id"
@@ -35,6 +52,16 @@ ActiveRecord::Schema.define(version: 20150517145521) do
 
   add_index "popularities", ["product_id"], name: "index_popularities_on_product_id", using: :btree
   add_index "popularities", ["user_id"], name: "index_popularities_on_user_id", using: :btree
+
+  create_table "product_pages", force: :cascade do |t|
+    t.integer  "website_id"
+    t.string   "name_selector"
+    t.string   "picture_selector"
+    t.string   "price_selector"
+    t.string   "validator_selector"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
 
   create_table "products", force: :cascade do |t|
     t.string   "page_link"
@@ -61,15 +88,8 @@ ActiveRecord::Schema.define(version: 20150517145521) do
     t.string   "url"
     t.string   "name"
     t.integer  "num_of_products"
-    t.string   "product_name_selector"
-    t.string   "product_url_selector"
-    t.string   "product_picture_selector"
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
-    t.string   "page_product_picture_selector"
-    t.string   "page_product_name_selector"
-    t.string   "page_product_price_selector"
-    t.string   "product_price_selector"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
   add_foreign_key "categories", "websites"
