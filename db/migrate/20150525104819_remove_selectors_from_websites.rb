@@ -7,6 +7,5 @@ class RemoveSelectorsFromWebsites < ActiveRecord::Migration
     remove_column :websites , :page_product_picture_selector
     remove_column :websites , :page_product_name_selector
     remove_column :websites , :page_product_price_selector
-
   end
 end

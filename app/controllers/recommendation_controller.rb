@@ -4,8 +4,7 @@ class RecommendationController < ApplicationController
   before_action :set_website, only: [:show]
 
   def show
-    @website.num_of_products
-    respond_with @website, user_id: @user.id and return
+    respond_with @website, user_id: @user.id
   end
 
   private

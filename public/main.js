@@ -135,7 +135,7 @@ function main() {
             function Recommandation() {
                 this.url = window.location.host,
                 this.products = {},
-                this.products_count = 0,
+                this.num_of_products = 1,
                 this.selectors = {}
             }
 
@@ -152,24 +152,29 @@ function main() {
                             url: window.location.host
                         },
                         success: function(data){
-                            data = jQuery.parseJSON(data);
-                            console.log('products:'+data.products +'\n' + 'products_count:'+data.products_count +'\n'+ 'selectors:'+data.selectors);
+                            data = data.website;
+                            console.log('products:'+data.products +'\n' + 'num_of_products:'+data.num_of_products +'\n'+ 'selectors:'+data.home_page);
                             recommendation.products = data.products;
-                            recommendation.products_count = data.products_count;
-                            recommendation.selectors = data.selectors;
+                            recommendation.num_of_products = data.num_of_products;
+                            recommendation.home_page = data.home_page;
                             callback();
                         }
                     })
                 },
                 set: function(){
-                    if(location.href.split('/')[location.href.split('/').length-1] == '' && recommendation.products_count !== undefined &&
-                        recommendation.products_count > 0 && recommendation.products.length >0){
+                    if(location.href.split('/')[location.href.split('/').length-1] == '' && recommendation.num_of_products !== undefined &&
+                        recommendation.num_of_products > 0 && recommendation.products.length >0){
                         $(recommendation.products).each(function(index,product){
-                            product = product.product;
-                            $(products_index(recommendation.selectors.url,recommendation.products_count,index)).attr('href',product.url);
-                            $(products_index(recommendation.selectors.name,recommendation.products_count,index)).text(product.name);
-                            $(products_index(recommendation.selectors.picture,recommendation.products_count,index)).attr('src',product.picture);
-                            $(products_index(recommendation.selectors.price,recommendation.products_count,index)).text($($(recommendation.selectors.price)[index]).text().replace(/[0-9/.]+/g, product.price));
+                            debugger
+                            $(products_index(recommendation.home_page.product_url_selector,
+                                recommendation.num_of_products,index)).attr('href',product.page_link);
+                            $(products_index(recommendation.home_page.product_name_selector,
+                                recommendation.num_of_products,index)).text(product.title);
+                            $(products_index(recommendation.home_page.product_picture_selector,
+                                recommendation.num_of_products,index)).attr('src',product.picture_link);
+                            $(products_index(recommendation.home_page.product_price_selector,
+                                recommendation.num_of_products,index)).text($($(recommendation.home_page.product_price_selector)[index])
+                                    .text().replace(/[0-9/.]+/g, product.price));
                         })
                     }
                 },
@@ -177,9 +182,9 @@ function main() {
                     recommendation.get(recommendation.set);
                 }
             };
-            function products_index(selector,products_count,index){
+            function products_index(selector,num_of_products,index){
                 urls = $(selector);
-                num_of_urls = parseInt(urls.length/products_count);
+                num_of_urls = parseInt(urls.length/num_of_products);
                 return urls.slice((index*num_of_urls),((index*num_of_urls)+num_of_urls));
             };
 
