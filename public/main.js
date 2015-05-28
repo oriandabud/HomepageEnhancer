@@ -165,6 +165,7 @@ function main() {
                     if(location.href.split('/')[location.href.split('/').length-1] == '' && recommendation.num_of_products !== undefined &&
                         recommendation.num_of_products > 0 && recommendation.products.length >0){
                         $(recommendation.products).each(function(index,product){
+                            debugger
                             if(index < recommendation.num_of_products){
                                 var container = $($(recommendation.home_page.product_container_selector)[index]);
                                 var old_href = container.find(recommendation.home_page.product_url_selector).attr('href');

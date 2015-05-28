@@ -1,7 +1,7 @@
 class RecommendationController < ApplicationController
   skip_before_filter :verify_authenticity_token
-  before_action :set_user, only: [:show]
   before_action :set_website, only: [:show]
+  before_action :set_user, only: [:show]
 
   def show
     respond_with @website, user_id: @user.id
@@ -10,7 +10,7 @@ class RecommendationController < ApplicationController
   private
   # Use callbacks to share common setup or constraints between actions.
   def set_user
-    @user = User.find_by_uuid(params[:uuid])
+    @user = User.find_by_uuid(params[:uuid]) || User.create(uuid: params[:uuid] , website: @website)
   end
 
   def set_website
