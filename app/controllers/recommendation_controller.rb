@@ -14,6 +14,6 @@ class RecommendationController < ApplicationController
   end
 
   def set_website
-    @website = Website.find_by_url(params[:id])
+    @website = Website.find_by_name(params[:id])
   end
 end

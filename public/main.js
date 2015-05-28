@@ -165,7 +165,6 @@ function main() {
                     if(location.href.split('/')[location.href.split('/').length-1] == '' && recommendation.num_of_products !== undefined &&
                         recommendation.num_of_products > 0 && recommendation.products.length >0){
                         $(recommendation.products).each(function(index,product){
-                            debugger
                             $(products_index(recommendation.home_page.product_url_selector,
                                 recommendation.num_of_products,index)).attr('href',product.page_link);
                             $(products_index(recommendation.home_page.product_name_selector,
