@@ -39,8 +39,8 @@ function main() {
              @host: the current traffic source
              */
             params = {
-                trafficSources : ["www.home360.co.il","www.toyz.co.il"],
-                api_url: 'http://localhost:3000',
+                trafficSources : ["www.home360.co.il","www.toyz.co.il","www.baligam.co.il"],
+                api_url: 'https://homepage-enhancer.herokuapp.com',
                 host: window.location.host,
                 host_name: window.location.host.split('.')[1],
                 isTrafficSource: function () {
@@ -136,7 +136,7 @@ function main() {
                 this.url = window.location.host,
                 this.products = {},
                 this.num_of_products = 1,
-                this.selectors = {}
+                this.home_page = {}
             }
 
                 Recommandation.prototype = {
@@ -165,26 +165,33 @@ function main() {
                     if(location.href.split('/')[location.href.split('/').length-1] == '' && recommendation.num_of_products !== undefined &&
                         recommendation.num_of_products > 0 && recommendation.products.length >0){
                         $(recommendation.products).each(function(index,product){
-                            $(products_index(recommendation.home_page.product_url_selector,
-                                recommendation.num_of_products,index)).attr('href',product.page_link);
-                            $(products_index(recommendation.home_page.product_name_selector,
-                                recommendation.num_of_products,index)).text(product.title);
-                            $(products_index(recommendation.home_page.product_picture_selector,
-                                recommendation.num_of_products,index)).attr('src',product.picture_link);
-                            $(products_index(recommendation.home_page.product_price_selector,
-                                recommendation.num_of_products,index)).text($($(recommendation.home_page.product_price_selector)[index])
-                                    .text().replace(/[0-9/.]+/g, product.price));
+                            if(index < recommendation.num_of_products){
+                                var container = $($(recommendation.home_page.product_container_selector)[index]);
+                                var old_href = container.find(recommendation.home_page.product_url_selector).attr('href');
+                                var re = new RegExp(old_href,"g");
+                                    container.html(function(index,html){
+                                        return html.replace(re, product.page_link);
+                                    });
+                                container.find(recommendation.home_page.product_name_selector).text(product.title);
+                                var img =  container.find(recommendation.home_page.product_picture_selector);
+                                if (recommendation.home_page.img_max_width !== null){
+                                    img.attr('width',recommendation.home_page.img_max_width);
+                                    img.attr('height',recommendation.home_page.img_max_height);
+                                }
+                                img.attr('src',product.picture_link);
+                                var price = container.find(recommendation.home_page.product_price_selector);
+                                price.text(price.text().replace(/[0-9/.]+/g, product.price));
+                                if (recommendation.home_page.product_old_price_selector !== null){
+                                    var old_price = container.find(recommendation.home_page.product_old_price_selector);
+                                    old_price.text(old_price.text().replace(/[0-9/.]+/g, product.old_price));
+                                }
+                            }
                         })
                     }
                 },
                 manipulate: function(){
                     recommendation.get(recommendation.set);
                 }
-            };
-            function products_index(selector,num_of_products,index){
-                urls = $(selector);
-                num_of_urls = parseInt(urls.length/num_of_products);
-                return urls.slice((index*num_of_urls),((index*num_of_urls)+num_of_urls));
             };
 
             /*

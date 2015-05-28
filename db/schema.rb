@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150527054813) do
+ActiveRecord::Schema.define(version: 20150528135118) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,8 +39,12 @@ ActiveRecord::Schema.define(version: 20150527054813) do
     t.string   "product_url_selector"
     t.string   "product_price_selector"
     t.string   "product_picture_selector"
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.string   "product_old_price_selector"
+    t.string   "product_container_selector"
+    t.string   "img_max_width"
+    t.string   "img_max_height"
   end
 
   create_table "popularities", force: :cascade do |t|
@@ -60,8 +64,10 @@ ActiveRecord::Schema.define(version: 20150527054813) do
     t.string   "picture_selector"
     t.string   "price_selector"
     t.string   "validator_selector"
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+    t.string   "old_price_selector"
+    t.string   "regular_price_selector"
   end
 
   create_table "products", force: :cascade do |t|
@@ -69,9 +75,11 @@ ActiveRecord::Schema.define(version: 20150527054813) do
     t.string   "picture_link"
     t.string   "title"
     t.integer  "website_id"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
     t.integer  "price"
+    t.integer  "old_price"
+    t.integer  "regular_price"
   end
 
   add_index "products", ["website_id"], name: "index_products_on_website_id", using: :btree
@@ -97,5 +105,7 @@ ActiveRecord::Schema.define(version: 20150527054813) do
   add_foreign_key "popularities", "products"
   add_foreign_key "popularities", "users"
   add_foreign_key "products", "websites"
+  add_foreign_key "products", "websites"
+  add_foreign_key "users", "websites"
   add_foreign_key "users", "websites"
 end

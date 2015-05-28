@@ -14,9 +14,18 @@ module Factory
 
         title        = doc.at_css(website.product_page.name_selector).text
         picture_link = doc.at_css(website.product_page.picture_selector).xpath('@src').first.value
-        price        = doc.at_css(website.product_page.price_selector).text.scan(/[\d\.]/).join('')
 
-        [ViewAble.find_by_page_link(url) || Product.create(page_link: url,picture_link: picture_link, title: title , price: price , website: website)]
+        if doc.at_css(website.product_page.price_selector)
+          price        = doc.at_css(website.product_page.price_selector).text.scan(/[\d\.]/).join('')
+          old_price    = website.product_page.old_price_selector ?
+              doc.at_css(website.product_page.old_price_selector).text.scan(/[\d\.]/).join('')
+          : nil
+        else
+          price = old_price = doc.at_css(website.product_page.regular_price_selector).text.scan(/[\d\.]/).join('')
+        end
+
+
+        [ViewAble.find_by_page_link(url) || Product.create(page_link: url,picture_link: picture_link, title: title , price: price ,old_price: old_price ,  website: website)]
 
 
       elsif doc.at_css(website.category_page.validator_selector)
@@ -27,7 +36,8 @@ module Factory
 
         products = []
         products_urls.each do |product_url|
-          products += ViewAble.generate(website.url+product_url,website)
+          product_url = product_url.to_s.include?('http') ? product_url.to_s : website.url+product_url.to_s
+          products += ViewAble.generate(URI.encode(product_url),website)
         end
         products
       else
