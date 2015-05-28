@@ -37,7 +37,7 @@ module Factory
         products = []
         products_urls.each do |product_url|
           product_url = product_url.value.include?('http') ? product_url.value : website.url+product_url.value
-          products += ViewAble.generate(URI.encode(product_url),website)
+          products += ViewAble.generate(URI.encode(product_url),website) || Factory::ViewAble.generate(product_url,website)
         end
         products
       else
