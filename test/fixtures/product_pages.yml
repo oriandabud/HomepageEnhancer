@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  website: 
+  name_selector: MyString
+  url_selector: MyString
+  picture_selector: MyString
+  validator_selector: MyString
+
+two:
+  website: 
+  name_selector: MyString
+  url_selector: MyString
+  picture_selector: MyString
+  validator_selector: MyString

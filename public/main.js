@@ -40,6 +40,8 @@ function main() {
              */
             params = {
                 trafficSources : ["www.home360.co.il","www.toyz.co.il","www.baligam.co.il"],
+                // for develop
+                //api_url: 'http://localhost:3000',
                 api_url: 'https://homepage-enhancer.herokuapp.com',
                 host: window.location.host,
                 host_name: window.location.host.split('.')[1],
