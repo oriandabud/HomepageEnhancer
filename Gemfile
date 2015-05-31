@@ -30,6 +30,7 @@ gem 'responders', '~> 2.0'
 # gem 'bcrypt', '~> 3.1.7'
 gem 'nokogiri'
 gem 'rack-cors', :require => 'rack/cors'
+gem 'activeadmin', github: 'activeadmin'
 
 # Use Unicorn as the app server
 # gem 'unicorn'
