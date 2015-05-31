@@ -1,7 +1,13 @@
 class RecommendationController < ApplicationController
 
   def index
-    respond_with @current_website, user_id: @current_user.id
+    @recommandations = []
+    @current_user.popularities.by_entrances.limit(@current_website.num_of_products).each {|p| @recommandations << p.product} if @current_user
+
+    respond_with @recommandations, meta: {
+                                     num_of_products: @current_website.num_of_products,
+                                     home_page: @current_website.home_page,
+                                 }
   end
 
 end

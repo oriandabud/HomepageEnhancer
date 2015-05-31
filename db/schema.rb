@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150531101233) do
+ActiveRecord::Schema.define(version: 20150531123412) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,6 +48,14 @@ ActiveRecord::Schema.define(version: 20150531101233) do
     t.string   "validator_selector"
   end
 
+  create_table "entrances", force: :cascade do |t|
+    t.integer  "popularity_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  add_index "entrances", ["popularity_id"], name: "index_entrances_on_popularity_id", using: :btree
+
   create_table "home_pages", force: :cascade do |t|
     t.integer  "website_id"
     t.string   "product_name_selector"
@@ -63,11 +71,11 @@ ActiveRecord::Schema.define(version: 20150531101233) do
   end
 
   create_table "popularities", force: :cascade do |t|
-    t.integer  "entrances",  default: 0
     t.integer  "user_id"
     t.integer  "product_id"
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.integer  "entrances_count", default: 0
   end
 
   add_index "popularities", ["product_id"], name: "index_popularities_on_product_id", using: :btree
@@ -117,6 +125,7 @@ ActiveRecord::Schema.define(version: 20150531101233) do
   end
 
   add_foreign_key "categories", "websites"
+  add_foreign_key "entrances", "popularities"
   add_foreign_key "popularities", "products"
   add_foreign_key "popularities", "users"
   add_foreign_key "products", "websites"

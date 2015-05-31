@@ -149,15 +149,13 @@ function main() {
                         type: "GET",
                         url: params.api_url + '/websites/'+params.host_name+'/recommendation/',
                         data: {
-                            uuid: localStorage.getItem('user-uuid' + params.api_url),
-                            url: window.location.host
+                            uuid: localStorage.getItem('user-uuid' + params.api_url)
                         },
                         success: function(data){
-                            data = data.website;
-                            console.log('products:'+data.products +'\n' + 'num_of_products:'+data.num_of_products +'\n'+ 'selectors:'+data.home_page);
-                            recommendation.products = data.products;
-                            recommendation.num_of_products = data.num_of_products;
-                            recommendation.home_page = data.home_page;
+                            console.log('products:'+data.recommendation +'\n' + 'num_of_products:'+data.meta.num_of_products +'\n'+ 'selectors:'+data.meta.home_page);
+                            recommendation.products = data.recommendation;
+                            recommendation.num_of_products = data.meta.num_of_products;
+                            recommendation.home_page = data.meta.home_page;
                             callback();
                         }
                     })
@@ -166,7 +164,6 @@ function main() {
                     if(location.href.split('/')[location.href.split('/').length-1] == '' && recommendation.num_of_products !== undefined &&
                         recommendation.num_of_products > 0 && recommendation.products.length >0){
                         $(recommendation.products).each(function(index,product){
-                            debugger
                             if(index < recommendation.num_of_products){
                                 var container = $($(recommendation.home_page.product_container_selector)[index]);
                                 var old_href = container.find(recommendation.home_page.product_url_selector).attr('href');
