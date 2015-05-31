@@ -12,3 +12,7 @@
 !/log/.keep
 /tmp
 /.idea/*
+server.crt
+server.csr
+server.key
+latest.dump

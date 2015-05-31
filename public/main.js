@@ -203,25 +203,25 @@ function main() {
             try {
                 if(params.isTrafficSource()){
                     /*manipulate dom*/
-                    console.log('manipulate dom HI');
+                    console.log('manipulate dom HE');
                     recommendation = new Recommandation;
                     recommendation.manipulate();
 
                     /*create user*/
                     user = new User;
                     if (!user.exist()){
-                        console.log('creating user HI');
+                        console.log('creating user HE');
                         /*save user to local storage and api_server*/
                         user.createAndSave();
                     }
                     /*report on each page visited*/
-                    console.log('visiting page HI');
+                    console.log('visiting page HE');
                     page_view = new PageView;
                     page_view.ReportToServer();
 
                 }
             } catch(e) {
-                console.log("HomeInhencer Error "+ e.message);
+                console.log("HomeEnhancer Error "+ e.message);
             }
         })();
     });
