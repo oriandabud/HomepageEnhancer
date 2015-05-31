@@ -5,7 +5,7 @@ module Scrapper
   require 'open-uri'
 
   def self.scrap_products( url , website  ,doc = nil)
-    doc = Nokogiri::HTML(open(url).read) unless doc
+    doc = get_doc doc , url
 
     if doc.at_css(website.product_page.validator_selector)
       [ Scrapper.scrap_product( url , website , doc) ]
@@ -18,7 +18,7 @@ module Scrapper
   end
 
   def self.scrap_product(url , website ,doc = nil)
-    doc = Nokogiri::HTML(open(url).read) unless doc
+    doc = get_doc doc , url
 
     title        = doc.at_css(website.product_page.name_selector).text
     picture_link = doc.at_css(website.product_page.picture_selector).xpath('@src').first.value
@@ -36,7 +36,7 @@ module Scrapper
   end
 
   def self.scrap_category( url , website ,doc = nil)
-    doc = Nokogiri::HTML(open(url).read) unless doc
+    doc = get_doc doc , url
 
     ::ViewAble.find_by_page_link(url) || Category.create!(page_link: url, website: website)
 
@@ -45,9 +45,18 @@ module Scrapper
     products = []
     products_urls.each do |product_url|
       product_url = product_url.value.include?('http') ? product_url.value : website.url+product_url.value
-      products << Scrapper.scrap_product(product_url,website) || Scrapper.scrap_product(URI.encode(product_url),website)
+      products += Scrapper.scrap_products(product_url,website)
     end
     products
+  end
+
+  def self.get_doc doc , url
+    unless doc
+      html = open(url).read rescue open(URI.encode(url)).read
+      doc = Nokogiri::HTML(html)
+    else
+      doc
+    end
   end
 
 end
