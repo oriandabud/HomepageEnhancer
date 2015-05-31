@@ -42,7 +42,7 @@ function main() {
                 trafficSources : ["www.home360.co.il","www.toyz.co.il","www.baligam.co.il"],
                 // for develop
                 //api_url: 'http://localhost:3000',
-                api_url: 'https://homepage-enhancer.herokuapp.com',
+                api_url: 'http://localhost:3000',
                 host: window.location.host,
                 host_name: window.location.host.split('.')[1],
                 isTrafficSource: function () {
@@ -70,11 +70,10 @@ function main() {
 
                     $.ajax({
                         type: "POST",
-                        url: params.api_url+'/page_view/',
+                        url: params.api_url+'/websites/'+ params.host_name +'/page_view/',
                         data: {
-                                user: page_view.user,
-                                url: page_view.url,
-                                website: params.host_name
+                                uuid: page_view.user,
+                                url: page_view.url
                               },
                         success: function(data) {
                             console.log('reported user:' + page_view.user + ' on page ' + page_view.url)
@@ -112,7 +111,7 @@ function main() {
                         localStorage.setItem('user-uuid'+params.api_url, User.guid());
                     },
                     createOnServer: function () {
-                        $.get(params.api_url+'/authenticate/'+user.uuid+'' + '.json?website='+params.url,
+                        $.get(params.api_url+'/websites/'+ params.host_name +'/authenticate/'+user.uuid+'' + '.json',
                                     function(userSR){
                                         console.log('authenticated ' + userSR.uuid)
                                     }
@@ -148,7 +147,7 @@ function main() {
                 get: function(callback){
                     $.ajax({
                         type: "GET",
-                        url: params.api_url + '/recommendation/' + params.host_name,
+                        url: params.api_url + '/websites/'+params.host_name+'/recommendation/',
                         data: {
                             uuid: localStorage.getItem('user-uuid' + params.api_url),
                             url: window.location.host

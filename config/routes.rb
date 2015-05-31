@@ -2,10 +2,12 @@ Rails.application.routes.draw do
 
   ActiveAdmin.routes(self)
 
-  resources :authenticate , only: [:show]
+  resources :websites do
 
-  resources :page_view , only: [:show]
+    resources :authenticate , only: [:show] , param: :uuid
 
-  resources :recommendation, only: [:show]
+    resources :page_view , only: [:create]
 
+    resources :recommendation, only: [:index]
+  end
 end

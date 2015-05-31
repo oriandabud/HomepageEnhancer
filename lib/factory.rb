@@ -25,12 +25,12 @@ module Factory
         end
 
 
-        [ViewAble.find_by_page_link(url) || Product.create(page_link: url,picture_link: picture_link, title: title , price: price ,old_price: old_price ,  website: website)]
+        [ViewAble.find_by_page_link(url) || Product.create!(page_link: url,picture_link: picture_link, title: title , price: price ,old_price: old_price ,  website: website)]
 
 
       elsif doc.at_css(website.category_page.validator_selector)
 
-        ViewAble.find_by_page_link(url) || Category.create(page_link: url, website: website)
+        ViewAble.find_by_page_link(url) || Category.create!(page_link: url, website: website)
 
         products_urls = doc.css(website.category_page.products_selector).xpath('@href')
 

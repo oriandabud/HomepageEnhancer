@@ -4,8 +4,7 @@ class WebsiteSerializer < ActiveModel::Serializer
 
   def products
     @user = User.find(@options[:user_id])
-    @products = Product.all.limit(0)
-    @user.popularities.limit(object.num_of_products).each {|p| @products << p.product} if @user
+    @user.popularities.limit(object.num_of_products).each {|p| @products || Product.none << p.product} if @user
     @products
   end
 
