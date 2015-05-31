@@ -23,6 +23,6 @@ module HomepageInhercer
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
     config.autoload_paths << Rails.root.join('lib')
-    config.force_ssl = true if !Rails.env.develop?
+    config.force_ssl = true unless Rails.env.development?
   end
 end
