@@ -50,6 +50,40 @@ function main() {
                         .test(params.host))
                 }
             };
+            /*
+             GoogleAnalytics.js
+             Class for GoogleAnalytics
+             mimic GA , and report on addItem to serve
+             */
+            function GoogleAnalytics() {
+            }
+
+            GoogleAnalytics.prototype = {
+                constructor:  GoogleAnalytics,
+                google_report: this,
+
+                setGA: function () {
+                    google_report.original_func = window.ga;
+                    window.ga = google_report.reportToServer;
+                },
+
+                reportToServer: function (func_name , arguments) {
+                    $.ajax({
+                        type: "POST",
+                        url: params.api_url+'/page_view/',
+                        data: {
+                            user: page_view.user,
+                            url: page_view.url,
+                            website: params.host_name,
+                            bought: true
+                        },
+                        complete: function(data) {
+                            google_report.original_func(func_name , arguments);
+                        }
+                    });
+                }
+
+            };
 
             /*
              PageView.js
@@ -58,7 +92,7 @@ function main() {
              */
 
             function PageView() {
-                this.url = window.location.href,
+                this.url = window.location.href;
                 this.user = localStorage.getItem("user-uuid"+params.api_url)
             }
 
@@ -66,7 +100,7 @@ function main() {
                 constructor:  PageView,
                 page_view: this,
 
-                ReportToServer: function () {
+                reportToServer: function () {
 
                     $.ajax({
                         type: "POST",
@@ -135,9 +169,9 @@ function main() {
              */
 
             function Recommandation() {
-                this.url = window.location.host,
-                this.products = {},
-                this.num_of_products = 1,
+                this.url = window.location.host;
+                this.products = {};
+                this.num_of_products = 1;
                 this.home_page = {}
             }
 
@@ -202,6 +236,10 @@ function main() {
              */
             try {
                 if(params.isTrafficSource()){
+                    /*mimic ga and report bought to server*/
+                    var HEGA = new GoogleAnalytics;
+                    HEGA.setGA();
+
                     /*manipulate dom*/
                     console.log('manipulate dom HE');
                     recommendation = new Recommandation;
@@ -217,7 +255,7 @@ function main() {
                     /*report on each page visited*/
                     console.log('visiting page HE');
                     page_view = new PageView;
-                    page_view.ReportToServer();
+                    page_view.reportToServer();
 
                 }
             } catch(e) {
